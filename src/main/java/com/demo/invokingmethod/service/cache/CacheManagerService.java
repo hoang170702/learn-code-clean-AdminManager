@@ -1,17 +1,44 @@
 package com.demo.invokingmethod.service.cache;
 
+import com.demo.invokingmethod.configuration.CacheManager;
+import com.demo.invokingmethod.model.Category;
+import com.demo.invokingmethod.model.Product;
+import com.demo.invokingmethod.model.User;
 import com.demo.invokingmethod.model.admin.Parameter;
+import com.demo.invokingmethod.repository.CategoryRepository;
+import com.demo.invokingmethod.repository.ProductRepository;
+import com.demo.invokingmethod.repository.UserRepository;
+import com.demo.invokingmethod.repository.model.CategoryEntity;
+import com.demo.invokingmethod.utils.ConfigStatus;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class CacheManagerService implements ICacheManagerService {
+
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public CacheManagerService(CategoryRepository categoryRepository, ProductRepository productRepository, UserRepository userRepository) {
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
+
     @Override
     public LoadingCache<String, Parameter> loadingCache() {
         try {
@@ -22,7 +49,7 @@ public class CacheManagerService implements ICacheManagerService {
                     .build(new CacheLoader<>() {
                         @Override
                         public Parameter load(String key) throws Exception {
-                            return null;
+                            return loadParamByKey(key);
                         }
                     });
         } catch (Exception e) {
@@ -30,4 +57,46 @@ public class CacheManagerService implements ICacheManagerService {
             throw e;
         }
     }
+
+    private Parameter loadParamByKey(String key) {
+        Parameter.ParameterBuilder parameterBuilder = Parameter.builder();
+        switch (key) {
+            case CacheManager.CATEGORY:
+                loadCategoryByCache();
+                break;
+            case CacheManager.USER:
+                loadUserByCache();
+                break;
+            case CacheManager.PRODUCT:
+                loadProductByCache();
+                break;
+            default:
+        }
+        throw new RuntimeException("Parameter loading logic is not implemented");
+    }
+
+    private List<Category> loadCategoryByCache() {
+        List<CategoryEntity> categoryEntityList = categoryRepository.findAllByStatus(ConfigStatus.ACTIVE);
+        if (!CollectionUtils.isEmpty(categoryEntityList)) {
+            return categoryEntityList.stream()
+                    .map(
+                            t -> Category.builder()
+                                    .id(t.getId())
+                                    .name(t.getName())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    private List<User> loadUserByCache() {
+        return Collections.EMPTY_LIST;
+    }
+
+    private List<Product> loadProductByCache() {
+        return Collections.EMPTY_LIST;
+    }
+
+
 }
