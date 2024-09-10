@@ -1,5 +1,6 @@
 package com.demo.invokingmethod.model;
 
+import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,5 @@ public class Product
 
     private String price;
 
-    private String status;
+    private ConfigStatus status;
 }

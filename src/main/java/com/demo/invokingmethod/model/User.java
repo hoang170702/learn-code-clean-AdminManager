@@ -1,6 +1,7 @@
 package com.demo.invokingmethod.model;
 
 
+import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.*;
 import javax.persistence.*;
 
@@ -16,5 +17,5 @@ public class User {
 
     private String email;
 
-    private String status;
+    private ConfigStatus status;
 }

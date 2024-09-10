@@ -1,5 +1,6 @@
 package com.demo.invokingmethod.model;
 
+import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.*;
 import javax.persistence.*;
 
@@ -11,5 +12,5 @@ import javax.persistence.*;
 public class Category {
     private Long id;
     private String name;
-    private String status;
+    private ConfigStatus status;
 }

@@ -8,6 +8,8 @@ import com.demo.invokingmethod.repository.CategoryRepository;
 import com.demo.invokingmethod.repository.ProductRepository;
 import com.demo.invokingmethod.repository.UserRepository;
 import com.demo.invokingmethod.repository.model.CategoryEntity;
+import com.demo.invokingmethod.repository.model.ProductEntity;
+import com.demo.invokingmethod.repository.model.UserEntity;
 import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ public class ManagerConfigService implements IManagerConfigService {
                     categoryRepository.deleteCategory(category.getId());
                     return;
                 }
+                categoryEntity.setStatus(category.getStatus());
             } else {
                 categoryEntity = new CategoryEntity();
                 categoryEntity.setStatus(ConfigStatus.ACTIVE);
@@ -56,7 +59,24 @@ public class ManagerConfigService implements IManagerConfigService {
     @Transactional
     @Override
     public void createOrUpdateProduct(Product product, Boolean isDel) {
+        ProductEntity productEntity;
         try {
+            if (product.getId() != null) {
+                productEntity = productRepository.findById(product.getId()).orElseThrow(Exception::new);
+                if (isDel) {
+                    productRepository.deleteProduct(product.getId());
+                    return;
+                }
+                productEntity.setStatus(product.getStatus());
+            } else {
+                productEntity = new ProductEntity();
+                productEntity.setStatus(ConfigStatus.ACTIVE);
+            }
+            productEntity.setName(product.getName());
+            productEntity.setPrice(product.getPrice());
+            productEntity.setCategory(product.getCategory());
+
+            productRepository.save(productEntity);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,8 +87,22 @@ public class ManagerConfigService implements IManagerConfigService {
     @Transactional
     @Override
     public void CreateOrUpdateUser(User user, Boolean isDel) {
+        UserEntity userEntity;
         try {
-
+            if (user.getId() != null) {
+                userEntity = userRepository.findById(user.getId()).orElseThrow(Exception::new);
+                if (isDel) {
+                    userRepository.deleteUser(user.getId());
+                    return;
+                }
+                userEntity.setStatus(user.getStatus());
+            } else {
+                userEntity = new UserEntity();
+                userEntity.setStatus(ConfigStatus.ACTIVE);
+            }
+            userEntity.setEmail(user.getEmail());
+            userEntity.setFullName(user.getFullName());
+            userRepository.save(userEntity);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error when create or update user: {}", e.getMessage());
