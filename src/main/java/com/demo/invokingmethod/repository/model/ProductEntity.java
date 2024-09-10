@@ -1,6 +1,5 @@
 package com.demo.invokingmethod.repository.model;
 
-
 import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,15 +12,18 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "users")
-public class User {
+@Entity(name = "products")
+public class ProductEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
+    private String category;
 
-    private String email;
+    private String name;
+
+    private String price;
 
     @Enumerated(EnumType.STRING)
     private ConfigStatus status;

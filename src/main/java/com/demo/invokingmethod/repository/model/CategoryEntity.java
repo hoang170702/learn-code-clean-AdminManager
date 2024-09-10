@@ -12,19 +12,12 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "products")
-public class Product
-{
+@Entity(name = "categories")
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String category;
-
     private String name;
-
-    private String price;
-
     @Enumerated(EnumType.STRING)
     private ConfigStatus status;
 }
