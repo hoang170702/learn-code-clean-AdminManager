@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
@@ -42,6 +39,15 @@ public class ParameterController {
                 default:
             }
             return ResponseEntity.ok("Config saved successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid request");
+        }
+    }
+
+    @GetMapping("/load-parameters")
+    public ResponseEntity<?> loadParameters(@RequestParam(value = "type", required = false) String type) {
+        try {
+            return ResponseEntity.status(200).body(iManagerConfigService.getParameter(type));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Invalid request");
         }

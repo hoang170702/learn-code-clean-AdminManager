@@ -9,6 +9,8 @@ import com.demo.invokingmethod.repository.CategoryRepository;
 import com.demo.invokingmethod.repository.ProductRepository;
 import com.demo.invokingmethod.repository.UserRepository;
 import com.demo.invokingmethod.repository.model.CategoryEntity;
+import com.demo.invokingmethod.repository.model.ProductEntity;
+import com.demo.invokingmethod.repository.model.UserEntity;
 import com.demo.invokingmethod.utils.ConfigStatus;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -62,18 +64,29 @@ public class CacheManagerService implements ICacheManagerService {
         Parameter.ParameterBuilder parameterBuilder = Parameter.builder();
         switch (key) {
             case CacheManager.CATEGORY:
-                loadCategoryByCache();
+                List<Category> categories = loadCategoryByCache();
+                if (!categories.isEmpty()) {
+                    parameterBuilder.categories(categories);
+                }
                 break;
             case CacheManager.USER:
-                loadUserByCache();
+                List<User> users = loadUserByCache();
+                if (!users.isEmpty()) {
+                    parameterBuilder.users(users);
+                }
                 break;
             case CacheManager.PRODUCT:
-                loadProductByCache();
+                List<Product> products = loadProductByCache();
+                if (!products.isEmpty()) {
+                    parameterBuilder.products(products);
+                }
                 break;
             default:
+                throw new RuntimeException("Invalid parameter type: " + key);
         }
-        throw new RuntimeException("Parameter loading logic is not implemented");
+        return parameterBuilder.build();
     }
+
 
     private List<Category> loadCategoryByCache() {
         List<CategoryEntity> categoryEntityList = categoryRepository.findAllByStatus(ConfigStatus.ACTIVE);
@@ -91,10 +104,34 @@ public class CacheManagerService implements ICacheManagerService {
     }
 
     private List<User> loadUserByCache() {
+        List<UserEntity> userEntities = userRepository.findAllByStatus(ConfigStatus.ACTIVE);
+        if (!CollectionUtils.isEmpty(userEntities)) {
+            return userEntities.stream()
+                    .map(
+                            t -> User.builder()
+                                    .id(t.getId())
+                                    .fullName(t.getFullName())
+                                    .email(t.getEmail())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
         return Collections.EMPTY_LIST;
     }
 
     private List<Product> loadProductByCache() {
+        List<ProductEntity> productEntities = productRepository.findAllByStatus(ConfigStatus.ACTIVE);
+        if (!CollectionUtils.isEmpty(productEntities)) {
+            return productEntities.stream()
+                    .map(
+                            t -> Product.builder()
+                                    .id(t.getId())
+                                    .price(t.getPrice())
+                                    .category(t.getCategory())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
         return Collections.EMPTY_LIST;
     }
 

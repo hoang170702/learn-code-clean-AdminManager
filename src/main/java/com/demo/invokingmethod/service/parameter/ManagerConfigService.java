@@ -10,6 +10,7 @@ import com.demo.invokingmethod.repository.UserRepository;
 import com.demo.invokingmethod.repository.model.CategoryEntity;
 import com.demo.invokingmethod.repository.model.ProductEntity;
 import com.demo.invokingmethod.repository.model.UserEntity;
+import com.demo.invokingmethod.service.cache.ICacheManagerService;
 import com.demo.invokingmethod.utils.ConfigStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,14 @@ public class ManagerConfigService implements IManagerConfigService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ICacheManagerService iCacheManagerService;
 
     @Autowired
-    public ManagerConfigService(CategoryRepository categoryRepository, ProductRepository productRepository, UserRepository userRepository) {
+    public ManagerConfigService(CategoryRepository categoryRepository, ProductRepository productRepository, UserRepository userRepository, ICacheManagerService iCacheManagerService) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.iCacheManagerService = iCacheManagerService;
     }
 
     @Transactional
@@ -113,7 +116,7 @@ public class ManagerConfigService implements IManagerConfigService {
     @Override
     public Parameter getParameter(String key) {
         try {
-
+            return iCacheManagerService.loadingCache().getUnchecked(key);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error when get parameter: {}", e.getMessage());

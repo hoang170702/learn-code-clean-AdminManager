@@ -1,10 +1,7 @@
 package com.demo.invokingmethod.model;
 
 import com.demo.invokingmethod.utils.ConfigStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +12,7 @@ import javax.persistence.Id;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Product
 {
     private Long id;
